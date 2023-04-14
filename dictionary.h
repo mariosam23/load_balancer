@@ -1,3 +1,4 @@
+/* Copyright 2023 Sampetru Mario */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

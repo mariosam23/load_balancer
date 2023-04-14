@@ -1,3 +1,4 @@
+# Copyright 2023 Sampetru Mario
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra
 LOAD=load_balancer

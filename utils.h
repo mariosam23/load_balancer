@@ -1,4 +1,4 @@
-/* Copyright 2023 <> */
+/* Copyright 2023 Sampetru Mario */
 #ifndef UTILS_H_
 #define UTILS_H_
 
