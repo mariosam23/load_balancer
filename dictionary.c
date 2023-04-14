@@ -1,5 +1,6 @@
 /* Copyright 2023 Sampetru Mario */
 #include "dictionary.h"
+#include "utils.h"
 
 linked_list_t *ll_create(unsigned int data_size)
 {

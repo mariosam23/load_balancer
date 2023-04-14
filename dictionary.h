@@ -4,16 +4,6 @@
 #include <string.h>
 #include <errno.h>
 
-#define DIE(assertion, call_description)				\
-	do {								\
-		if (assertion) {					\
-			fprintf(stderr, "(%s, %d): ",			\
-					__FILE__, __LINE__);		\
-			perror(call_description);			\
-			exit(errno);				        \
-		}							\
-	} while (0)
-
 #define MAX_STRING_SIZE	256
 #define HMAX 10
 
@@ -31,6 +21,16 @@ typedef struct linked_list_t
     unsigned int data_size;
     unsigned int size;
 } linked_list_t;
+
+typedef struct hashtable_t hashtable_t;
+struct hashtable_t {
+	linked_list_t **buckets;
+	unsigned int size;
+	unsigned int hmax;
+	unsigned int (*hash_function)(void*);
+	int (*compare_function)(void*, void*);
+	void (*key_val_free_function)(void*);
+};
 
 linked_list_t *ll_create(unsigned int data_size);
 
@@ -52,16 +52,6 @@ typedef struct info_t {
 	void *key;
 	void *value;
 } info_t;
-
-typedef struct hashtable_t hashtable_t;
-struct hashtable_t {
-	linked_list_t **buckets;
-	unsigned int size;
-	unsigned int hmax;
-	unsigned int (*hash_function)(void*);
-	int (*compare_function)(void*, void*);
-	void (*key_val_free_function)(void*);
-};
 
 int compare_function_ints(void *a, void *b);
 
