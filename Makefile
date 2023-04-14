@@ -3,13 +3,13 @@ CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra
 LOAD=load_balancer
 SERVER=server
-DICTIONARY=dictionary
+HASHTABLE=hashtable
 
 .PHONY: build clean
 
 build: tema2
 
-tema2: main.o $(LOAD).o $(SERVER).o $(DICTIONARY).o
+tema2: main.o $(LOAD).o $(SERVER).o $(HASHTABLE).o
 	$(CC) $^ -o $@
 
 main.o: main.c
@@ -21,7 +21,7 @@ $(SERVER).o: $(SERVER).c $(SERVER).h
 $(LOAD).o: $(LOAD).c $(LOAD).h
 	$(CC) $(CFLAGS) $^ -c
 
-$(DICTIONARY).o: $(DICTIONARY).c $(DICTIONARY).h
+$(HASHTABLE).o: $(HASHTABLE).c $(HASHTABLE).h
 	$(CC) $(CFLAGS) $^ -c
 
 clean:
