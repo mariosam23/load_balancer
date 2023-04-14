@@ -32,9 +32,7 @@ void server_store(server_memory *server, char *key, char *value)
 
 char *server_retrieve(server_memory *server, char *key)
 {
-	char *value = (char *)ht_get(server->ht, key);
-
-	return value;
+	return (char *)ht_get(server->ht, key);
 }
 
 void server_remove(server_memory *server, char *key)
