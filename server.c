@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "server.h"
-#include "dictionary.h"
+#include "hashtable.h"
 #include "utils.h"
 
 struct server_memory {

@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "load_balancer.h"
-#include "dictionary.h"
+#include "hashtable.h"
 #include "utils.h"
 
 typedef struct {
