@@ -3,34 +3,47 @@
 #include <string.h>
 
 #include "server.h"
+#include "dictionary.h"
+#include "utils.h"
 
 struct server_memory {
-	/* TODO 0 */
+	hashtable_t *ht;
 };
 
 server_memory *init_server_memory()
 {
-	/* TODO 1 */
-	return NULL;
+	server_memory *server = NULL;
+
+	server = malloc(sizeof(*server));
+	DIE(!server, "malloc failed");
+
+	server->ht = ht_create(INIT_SIZE, hash_function_string,
+						   compare_function_strings, key_val_free_function);
+
+	DIE(!server->ht, "malloc failed");
+
+	return server;
 }
 
 void server_store(server_memory *server, char *key, char *value)
 {
-	/* TODO 2 */
+	ht_put(server->ht, key, strlen(key) + 1, value, strlen(value) + 1);
 }
 
 char *server_retrieve(server_memory *server, char *key)
 {
-	/* TODO 3 */
-	return NULL;
+	char *value = (char *)ht_get(server->ht, key);
+
+	return value;
 }
 
 void server_remove(server_memory *server, char *key)
 {
-	/* TODO 4 */
+	ht_remove_entry(server->ht, key);
 }
 
 void free_server_memory(server_memory *server)
 {
-	/* TODO 5 */
+	ht_free(server->ht);
+	free(server);
 }
