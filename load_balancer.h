@@ -4,7 +4,26 @@
 
 #include "server.h"
 
-struct load_balancer;
+#define TEN_TO_FIFTH 100000
+#define NR_REPLICAS 3
+
+typedef unsigned int uint;
+
+typedef struct {
+	uint server_id;
+	// eticheta = replica_id * 10^5  + server_id;
+	uint label;
+	uint replica_id;
+	uint hash;
+	server_memory *server;
+} hash_ring_t;
+
+struct load_balancer {
+	hash_ring_t *hash_ring;
+	uint hash_ring_size;
+	uint hash_ring_capacity;
+};
+
 typedef struct load_balancer load_balancer;
 
 /**

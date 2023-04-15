@@ -6,21 +6,6 @@
 #include "hashtable.h"
 #include "utils.h"
 
-typedef struct {
-	uint server_id;
-	// eticheta = replica_id * 10^5  + server_id;
-	uint label;
-	uint replica_id;
-	uint hash;
-	server_memory *server;
-} hash_ring_t;
-
-struct load_balancer {
-	hash_ring_t *hash_ring;
-	uint hash_ring_size;
-	uint hash_ring_capacity;
-};
-
 unsigned int hash_function_servers(void *a)
 {
 	unsigned int uint_a = *((unsigned int *)a);

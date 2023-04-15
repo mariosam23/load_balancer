@@ -44,10 +44,6 @@ unsigned int ll_get_size(linked_list_t* list);
 
 void ll_free(linked_list_t** pp_list);
 
-void ll_print_int(linked_list_t* list);
-
-void ll_print_string(linked_list_t* list);
-
 typedef struct info_t {
 	void *key;
 	void *value;
@@ -77,7 +73,3 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size,
 void ht_remove_entry(hashtable_t *ht, void *key);
 
 void ht_free(hashtable_t *ht);
-
-unsigned int ht_get_size(hashtable_t *ht);
-
-unsigned int ht_get_hmax(hashtable_t *ht);

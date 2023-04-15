@@ -111,40 +111,6 @@ void ll_free(linked_list_t** pp_list)
     *pp_list = NULL;
 }
 
-void ll_print_int(linked_list_t* list)
-{
-    ll_node_t* curr;
-
-    if (!list) {
-        return;
-    }
-
-    curr = list->head;
-    while (curr != NULL) {
-        printf("%d ", *((int*)curr->data));
-        curr = curr->next;
-    }
-
-    printf("\n");
-}
-
-void ll_print_string(linked_list_t* list)
-{
-    ll_node_t* curr;
-
-    if (!list) {
-        return;
-    }
-
-    curr = list->head;
-    while (curr != NULL) {
-        printf("%s ", (char*)curr->data);
-        curr = curr->next;
-    }
-
-    printf("\n");
-}
-
 /*
  * Functii de comparare a cheilor:
  */
@@ -359,20 +325,4 @@ void ht_free(hashtable_t *ht)
 
 	free(ht->buckets);
 	free(ht);
-}
-
-unsigned int ht_get_size(hashtable_t *ht)
-{
-	if (!ht)
-		return 0;
-
-	return ht->size;
-}
-
-unsigned int ht_get_hmax(hashtable_t *ht)
-{
-	if (!ht)
-		return 0;
-
-	return ht->hmax;
 }
