@@ -75,30 +75,6 @@ void possible_realloc(load_balancer *main)
 	}
 }
 
-void add_first(load_balancer *main, server_memory *new_server, unsigned int
-			   server_id)
-{
-	main->hash_ring[0].label = server_id;
-	main->hash_ring[0].server = new_server;
-	main->hash_ring_size++;
-}
-
-unsigned int find_pos(load_balancer *main, server_memory *server,
-							unsigned int server_id, unsigned int i)
-{
-	unsigned int label = i * TEN_TO_FIFTH + server_id;
-	unsigned int pos = 0, j = 0;
-
-	while (j < main->hash_ring_size)
-		if (hash_function_servers(&label) <
-			hash_function_servers(&main->hash_ring[j].label))
-			pos++, j++;
-		else
-			break;
-
-	return pos;
-}
-
 void rebalance(load_balancer *main, unsigned int pos)
 {	
 	ll_node_t *node = NULL;
@@ -116,37 +92,63 @@ void rebalance(load_balancer *main, unsigned int pos)
 	}
 }
 
-void loader_add_server(load_balancer *main, int server_id)
+void add_first_server(load_balancer *main, unsigned int label, server_memory *
+					  new_server)
 {
+	main->hash_ring[0].label = label;
+	main->hash_ring[0].server = new_server;
+	main->hash_ring_size++;
+}
+
+void add_new_server(load_balancer *main, unsigned int label, server_memory *
+					new_server)
+{
+	unsigned int pos = 0;
+
+	while (pos < main->hash_ring_size &&
+			hash_function_servers(&label) >=
+			hash_function_servers(&main->hash_ring[pos].label)) {
+		
+		if (hash_function_servers(&label) ==
+			hash_function_servers(&main->hash_ring[pos].label)) {
+			if (label % TEN_TO_FIFTH > main->hash_ring->label %
+				TEN_TO_FIFTH) {
+					pos++;
+					break;
+				} else {
+					break;
+				}
+			}
+		pos++;
+	}
+
+	for (unsigned int j = main->hash_ring_size; j > pos; j--)
+		main->hash_ring[j] = main->hash_ring[j - 1];
+
+	main->hash_ring[pos].label = label;
+	main->hash_ring[pos].server = new_server;
+	main->hash_ring_size++;
+
+	if (pos + 1 < main->hash_ring_size)
+		if (main->hash_ring[pos + 1].server->ht->size)
+			rebalance(main, pos);
+}
+
+void loader_add_server(load_balancer *main, int server_id)
+{	
+	// Verific daca este nevoie de realocare.
 	possible_realloc(main);
 
     for (int i = 0; i < NR_REPLICAS; i++) {
         server_memory *new_server = init_server_memory();
+
         unsigned int label = i * TEN_TO_FIFTH + server_id;
 
-        if (!main->hash_ring_size) {
-            main->hash_ring[0].label = label;
-            main->hash_ring[0].server = new_server;
-            main->hash_ring_size++;
-        } else {
-            unsigned int pos = 0;
-
-            while (pos < main->hash_ring_size &&
-                   hash_function_servers(&label) > hash_function_servers(&main->hash_ring[pos].label)) {
-                pos++;
-            }
-
-            for (unsigned int j = main->hash_ring_size; j > pos; j--)
-                main->hash_ring[j] = main->hash_ring[j - 1];
-
-            main->hash_ring[pos].label = label;
-            main->hash_ring[pos].server = new_server;
-            main->hash_ring_size++;
-
-			if (pos + 1 < main->hash_ring_size)
-				if (main->hash_ring[pos + 1].server->ht->size)
-					rebalance(main, pos);
-        }
+		// Adaug primul server in hash ring.
+        if (!main->hash_ring_size)
+			add_first_server(main, label, new_server);
+        else
+			add_new_server(main, label, new_server);
     }
 }
 
@@ -168,8 +170,10 @@ char *loader_retrieve(load_balancer *main, char *key, int *server_id)
 
 void free_load_balancer(load_balancer *main)
 {
-	for (unsigned int i = 0; i < main->hash_ring_size; i++)
+	for (unsigned int i = 0; i < main->hash_ring_size; i++) {
+		printf("hash_label :  0x%x     ,   server_id: %d\n", hash_function_servers(&main->hash_ring[i].label), main->hash_ring[i].label % TEN_TO_FIFTH);
 		free_server_memory(main->hash_ring[i].server);
+	}
 	
 	// free(main->hash_ring->server);
 
