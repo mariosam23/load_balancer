@@ -76,7 +76,7 @@ void possible_realloc(load_balancer *main)
 }
 
 void rebalance(load_balancer *main, unsigned int pos)
-{	
+{
 	ll_node_t *node = NULL;
 	unsigned int j = 0;
 	while (j < main->hash_ring[pos + 1].server->ht->size) {
@@ -108,7 +108,7 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory *
 	while (pos < main->hash_ring_size &&
 			hash_function_servers(&label) >=
 			hash_function_servers(&main->hash_ring[pos].label)) {
-		
+
 		if (hash_function_servers(&label) ==
 			hash_function_servers(&main->hash_ring[pos].label)) {
 			if (label % TEN_TO_FIFTH > main->hash_ring->label %
@@ -135,7 +135,7 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory *
 }
 
 void loader_add_server(load_balancer *main, int server_id)
-{	
+{
 	// Verific daca este nevoie de realocare.
 	possible_realloc(main);
 
@@ -159,23 +159,45 @@ void loader_remove_server(load_balancer *main, int server_id)
 
 void loader_store(load_balancer *main, char *key, char *value, int *server_id)
 {
-	/* TODO 4 */
+	unsigned int hash_key = hash_function_key(key);
+	int pos = 0;
+
+	while (pos < (int)main->hash_ring_size &&
+		   hash_function_servers(&main->hash_ring[pos].label) < hash_key)
+		pos++;
+
+	// In caz ca pos ajunge sa depaseasca dimensiunea
+	pos %= main->hash_ring_size;
+
+	*server_id = main->hash_ring[pos].label % TEN_TO_FIFTH;
+
+	server_store(main->hash_ring[pos].server, key, value);
 }
 
 char *loader_retrieve(load_balancer *main, char *key, int *server_id)
 {
-	/* TODO 5 */
-	return NULL;
+	unsigned int hash_key = hash_function_key(key);
+	int pos = 0;
+
+	while (pos < (int)main->hash_ring_size &&
+		   hash_function_servers(&main->hash_ring[pos].label) < hash_key)
+		pos++;
+
+	// In caz ca pos ajunge sa depaseasca dimensiunea
+	pos %= main->hash_ring_size;
+
+	*server_id = main->hash_ring[pos].label % TEN_TO_FIFTH;
+
+	return (char *)server_retrieve(main->hash_ring[pos].server, key);
 }
 
 void free_load_balancer(load_balancer *main)
 {
 	for (unsigned int i = 0; i < main->hash_ring_size; i++) {
-		printf("hash_label :  0x%x     ,   server_id: %d\n", hash_function_servers(&main->hash_ring[i].label), main->hash_ring[i].label % TEN_TO_FIFTH);
+		// printf("hash_label :  0x%x     ,   server_id: %d\n", hash_function_servers(&main->hash_ring[i].label), main->hash_ring[i].label % TEN_TO_FIFTH);
 		free_server_memory(main->hash_ring[i].server);
 	}
-	
-	// free(main->hash_ring->server);
+
 
 	free(main->hash_ring);
 

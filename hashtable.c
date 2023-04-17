@@ -179,7 +179,7 @@ hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void*),
 {
 	hashtable_t *ht = malloc(sizeof(*ht));
     DIE(!ht, "malloc failed");
-	
+
 	ht->hmax = hmax;
 	ht->size = 0;
 
@@ -198,7 +198,7 @@ hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void*),
 }
 
 int ht_has_key(hashtable_t *ht, void *key)
-{	
+{
 	uint index = ht->hash_function(key) % ht->hmax;
 
 	if (!ht->buckets[index])
@@ -206,7 +206,7 @@ int ht_has_key(hashtable_t *ht, void *key)
 
 	ll_node_t *find_node = ht->buckets[index]->head;
 
-	while (find_node) {	
+	while (find_node) {
 		if (ht->compare_function(key, ((info_t *)find_node->data)->key) == 0)
 			return 1;
 
@@ -228,7 +228,7 @@ void *ht_get(hashtable_t *ht, void *key)
 	while (find_node) {
 		if (ht->compare_function(key, ((info_t *)find_node->data)->key) == 0)
 			return ((info_t *)find_node->data)->value;
-		
+
 		find_node = find_node->next;
 	}
 
@@ -253,7 +253,7 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size,
 		}
 
 		curr = curr->next;
-	}	
+	}
 
 	if (key_exists) {
 		memcpy(((info_t *)curr->data)->value, value, value_size);
@@ -311,7 +311,7 @@ void ht_remove_entry(hashtable_t *ht, void *key)
 }
 
 void ht_free(hashtable_t *ht)
-{	
+{
     for (uint i = 0; i < ht->hmax; i++) {
 		if (ht->buckets[i]) {
 			ll_node_t *curr = ht->buckets[i]->head;
