@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INIT_SIZE 100
+#define INIT_SIZE 3
 
 /* useful macro for handling error codes */
 #define DIE(assertion, call_description)                                       \

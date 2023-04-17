@@ -3,12 +3,7 @@
 #include <string.h>
 
 #include "server.h"
-#include "hashtable.h"
 #include "utils.h"
-
-struct server_memory {
-	hashtable_t *ht;
-};
 
 server_memory *init_server_memory()
 {

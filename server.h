@@ -2,8 +2,14 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "hashtable.h"
+
 struct server_memory;
 typedef struct server_memory server_memory;
+
+struct server_memory {
+	hashtable_t *ht;
+};
 
 /** init_server_memory() -  Initializes the memory for a new server struct.
  * 							Make sure to check what is returned by malloc using DIE.

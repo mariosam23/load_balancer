@@ -181,6 +181,7 @@ hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void*),
     DIE(!ht, "malloc failed");
 	
 	ht->hmax = hmax;
+	ht->size = 0;
 
 	ht->buckets = malloc(sizeof(*ht->buckets) * hmax);
 	DIE(!ht->buckets, "malloc failed");
