@@ -80,15 +80,8 @@ unsigned int get_server_id(load_balancer *main, int pos)
 	return main->hash_ring[pos].label % TEN_TO_FIFTH;
 }
 
-void rebalance(load_balancer *main, unsigned int pos)
+void rebalance(load_balancer *main, unsigned int pos, int dest_pos)
 {
-	int dest_pos;
-	for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size; dest_pos++)
-		if (get_server_id(main, dest_pos) != get_server_id(main, pos))
-			break;
-
-	dest_pos %= main->hash_ring_size;
-
 	if (!main->hash_ring[pos].server || !main->hash_ring[dest_pos].server)
 		return;
 
@@ -145,6 +138,7 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory *
 		pos++;
 	}
 
+	// pos %= main->hash_ring_size;
 	for (unsigned int j = main->hash_ring_size; j > pos; j--)
 		main->hash_ring[j] = main->hash_ring[j - 1];
 
@@ -152,9 +146,16 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory *
 	main->hash_ring[pos].server = new_server;
 	main->hash_ring_size++;
 
-	if (pos + 1 < main->hash_ring_size)
-		if (main->hash_ring[pos + 1].server->ht->size)
-			rebalance(main, pos);
+	int dest_pos = pos + 1;
+	dest_pos %= main->hash_ring_size;
+
+	for (; dest_pos < (int)main->hash_ring_size; dest_pos++)
+		if (get_server_id(main, dest_pos) != get_server_id(main, pos))
+			break;
+
+	if (dest_pos < (int)main->hash_ring_size)
+		if (main->hash_ring[dest_pos].server->ht->size)
+			rebalance(main, pos, dest_pos);
 }
 
 void loader_add_server(load_balancer *main, int server_id)
@@ -188,14 +189,20 @@ void loader_remove_server(load_balancer *main, int server_id)
 		// In caz ca pos ajunge sa depaseasca dimensiunea
 		pos %= main->hash_ring_size;
 
-		rebalance(main, pos);
+		int dest_pos;
+		for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size; dest_pos++)
+			if (get_server_id(main, dest_pos) != get_server_id(main, pos))
+				break;
+
+		dest_pos %= main->hash_ring_size;
+		rebalance(main, pos, dest_pos);
 
 		for (int j = pos; j < (int)main->hash_ring_size - 1; j++)
 			swap_data(&main->hash_ring[j], &main->hash_ring[j + 1]);
 	}
 
 	int size = main->hash_ring_size;
-	for (int i = size - 1; i > size - NR_REPLICAS; i--) {
+	for (int i = size - 1; i > size - 1 - NR_REPLICAS; i--) {
 		free_server_memory(main->hash_ring[i].server);
 		main->hash_ring_size--;
 	}
