@@ -7,3 +7,5 @@ store "5a51719f5ec" "Router"
 store "2fe5f9f583" "Laptop"
 retrieve "c674390f9"
 retrieve "2fe5f9f583"
+remove_server 2
+retrieve "2fe5f9f583"
