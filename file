@@ -8,4 +8,5 @@ add_server 2
 retrieve "c674390f9"
 retrieve "2fe5f9f583"
 remove_server 2
+remove_server 1
 retrieve "2fe5f9f583"

@@ -199,6 +199,41 @@ void loader_add_server(load_balancer *main, int server_id)
 	}
 }
 
+unsigned int get_hash(load_balancer *main, int pos)
+{
+	return hash_function_servers(&main->hash_ring[pos].label);
+}
+
+int find_pos(load_balancer *main, int pos, unsigned int hash_remv_serv, int id)
+{	
+	pos = -1;
+	int first_pos = 0;
+	int last_pos = main->hash_ring_size - 1;
+
+	while (first_pos <= last_pos) {
+		int mij = (first_pos + last_pos) / 2;
+
+		if (get_hash(main, mij) < hash_remv_serv && get_hash(main, mij + 1) > hash_remv_serv) {
+			pos = mij + 1;
+			break;
+		} else if (get_hash(main, mij) == hash_remv_serv) {
+			if ((int)get_server_id(main, mij) > id)
+				pos = mij;
+			else
+				pos = mij + 1;
+
+			break;
+		} else if (get_hash(main, mij) < hash_remv_serv) {
+			first_pos = mij + 1;
+		} else if (get_hash(main, mij) > hash_remv_serv) {
+			last_pos = mij - 1;
+		}
+	}
+
+
+	return pos;
+}
+
 void loader_remove_server(load_balancer *main, int server_id)
 {
 	for (int i = 0; i < NR_REPLICAS; i++) {
