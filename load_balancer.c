@@ -138,6 +138,8 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 					server_store(main->hash_ring[dest_pos].server, data->key, data->value);
 
 					// server_remove(main->hash_ring[src_pos].server, data->key);
+				} else if (!dest_pos) {
+					server_store(main->hash_ring[dest_pos].server, data->key, data->value);
 				}
 			}
 			node = node->next;
@@ -199,9 +201,9 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory * new
 	for (unsigned int j = main->hash_ring_size; j > pos; j--)
 		swap_data(&main->hash_ring[j], &main->hash_ring[j - 1]);
 
+	main->hash_ring_size++;
 	main->hash_ring[pos].label = label;
 	main->hash_ring[pos].server = new_server;
-	main->hash_ring_size++;
 
 	int src_pos = pos + 1;
 	while (src_pos < (int)main->hash_ring_size && get_server_id(main, src_pos) == get_server_id(main, pos)) {
