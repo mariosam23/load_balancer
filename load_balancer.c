@@ -91,19 +91,18 @@ void rebalance(load_balancer *main, unsigned int pos, int dest_pos)
 	unsigned int j = 0;
 
 	while (j < main->hash_ring[pos].server->ht->hmax) {
-		if (main->hash_ring[pos].server->ht->buckets[j]->size) {
+		if (main->hash_ring[pos].server->ht->buckets[j]->size)
 			node = main->hash_ring[pos].server->ht->buckets[j]->head;
-			while (node) {
-				info_t *data = NULL;
-				if (node->data)
-					data = (info_t *)node->data;
-				if (data) {
-					node = node->next;
-					server_store(main->hash_ring[dest_pos].server, (char *)data->key, (char *)data->value);
-					server_remove(main->hash_ring[pos].server, (char *)data->key);
-				} else {
-					node = node->next;
-				}
+		while (node) {
+			info_t *data = NULL;
+			if (node->data)
+				data = (info_t *)node->data;
+			if (data) {
+				node = node->next;
+				server_store(main->hash_ring[dest_pos].server, (char *)data->key, (char *)data->value);
+				server_remove(main->hash_ring[pos].server, (char *)data->key);
+			} else {
+				node = node->next;
 			}
 		}
 		j++;
@@ -134,8 +133,10 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 			info_t *data = NULL;
 			if (node->data) {
 				data = (info_t *)node->data;
+				// printf("\nKEY: %u\nSERVER: %u\n", hash_function_key(data->key), hash_function_servers(&main->hash_ring[dest_pos].label));
 				if (hash_function_key(data->key) < hash_function_servers(&main->hash_ring[dest_pos].label)) {
 					server_store(main->hash_ring[dest_pos].server, data->key, data->value);
+
 					// server_remove(main->hash_ring[src_pos].server, data->key);
 				}
 			}
@@ -143,7 +144,41 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 		}
 		j++;
 	}
+		// printf("\nSIZE: %d\n", main->hash_ring[src_pos].server->ht->size);
 
+}
+
+unsigned int get_hash(load_balancer *main, int pos)
+{
+	return hash_function_servers(&main->hash_ring[pos].label);
+}
+
+int find_pos(load_balancer *main, int pos, unsigned int hash_remv_serv, int id)
+{
+	pos = -1;
+	int first_pos = 0;
+	int last_pos = main->hash_ring_size - 1;
+
+	while (first_pos <= last_pos) {
+		int mij = (first_pos + last_pos) / 2;
+
+		if (get_hash(main, mij) < hash_remv_serv && get_hash(main, mij + 1) > hash_remv_serv) {
+			pos = mij + 1;
+			break;
+		} else if (get_hash(main, mij) == hash_remv_serv) {
+			if ((int)get_server_id(main, mij) > id)
+				pos = mij;
+			else
+				pos = mij + 1;
+			break;
+		} else if (get_hash(main, mij) < hash_remv_serv) {
+			first_pos = mij + 1;
+		} else if (get_hash(main, mij) > hash_remv_serv) {
+			last_pos = mij - 1;
+		}
+	}
+
+	return pos;
 }
 
 void add_new_server(load_balancer *main, unsigned int label, server_memory * new_server) {
@@ -162,7 +197,7 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory * new
 	}
 
 	for (unsigned int j = main->hash_ring_size; j > pos; j--)
-		main->hash_ring[j] = main->hash_ring[j - 1];
+		swap_data(&main->hash_ring[j], &main->hash_ring[j - 1]);
 
 	main->hash_ring[pos].label = label;
 	main->hash_ring[pos].server = new_server;
@@ -174,7 +209,7 @@ void add_new_server(load_balancer *main, unsigned int label, server_memory * new
 	}
 
 	src_pos %= main->hash_ring_size;
-	
+
 	if (main->hash_ring[src_pos].server->ht->size) {
 		// printf("SIZE: %d\n\n", main->hash_ring[src_pos].server->ht->size);
 		rebalance_adding(main, pos, src_pos);
@@ -199,53 +234,33 @@ void loader_add_server(load_balancer *main, int server_id)
 	}
 }
 
-unsigned int get_hash(load_balancer *main, int pos)
+int find_pos_to_remove(load_balancer *main, unsigned int hash_remv_serv)
 {
-	return hash_function_servers(&main->hash_ring[pos].label);
-}
-
-int find_pos(load_balancer *main, int pos, unsigned int hash_remv_serv, int id)
-{	
-	pos = -1;
 	int first_pos = 0;
 	int last_pos = main->hash_ring_size - 1;
 
 	while (first_pos <= last_pos) {
-		int mij = (first_pos + last_pos) / 2;
+		int middle = (first_pos + last_pos) / 2;
 
-		if (get_hash(main, mij) < hash_remv_serv && get_hash(main, mij + 1) > hash_remv_serv) {
-			pos = mij + 1;
-			break;
-		} else if (get_hash(main, mij) == hash_remv_serv) {
-			if ((int)get_server_id(main, mij) > id)
-				pos = mij;
-			else
-				pos = mij + 1;
-
-			break;
-		} else if (get_hash(main, mij) < hash_remv_serv) {
-			first_pos = mij + 1;
-		} else if (get_hash(main, mij) > hash_remv_serv) {
-			last_pos = mij - 1;
-		}
+		if (hash_remv_serv == get_hash(main, middle))
+			return middle;
+		else if (hash_remv_serv > get_hash(main, middle))
+			first_pos = middle + 1;
+		else
+			last_pos = middle - 1;
 	}
 
-
-	return pos;
+	printf("Something went wrong\n");
+	exit(EXIT_FAILURE);
 }
+
 
 void loader_remove_server(load_balancer *main, int server_id)
 {
 	for (int i = 0; i < NR_REPLICAS; i++) {
 		int pos = 0;
 		unsigned int label = i * TEN_TO_FIFTH + server_id;
-		while (pos < (int)main->hash_ring_size &&
-			hash_function_servers(&main->hash_ring[pos].label) <
-			hash_function_servers(&label))
-			pos++;
-
-		// In caz ca pos ajunge sa depaseasca dimensiunea
-		pos %= main->hash_ring_size;
+		pos = find_pos_to_remove(main, hash_function_servers(&label));
 
 		int dest_pos;
 		for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size; dest_pos++)
@@ -253,7 +268,9 @@ void loader_remove_server(load_balancer *main, int server_id)
 				break;
 
 		dest_pos %= main->hash_ring_size;
-		rebalance(main, pos, dest_pos);
+
+		if (main->hash_ring[pos].server->ht->size)
+			rebalance(main, pos, dest_pos);
 
 		for (int j = pos; j < (int)main->hash_ring_size - 1; j++)
 			swap_data(&main->hash_ring[j], &main->hash_ring[j + 1]);
@@ -264,7 +281,6 @@ void loader_remove_server(load_balancer *main, int server_id)
 		free_server_memory(main->hash_ring[i].server);
 		main->hash_ring_size--;
 	}
-
 }
 
 void loader_store(load_balancer *main, char *key, char *value, int *server_id)
@@ -290,8 +306,7 @@ char *loader_retrieve(load_balancer *main, char *key, int *server_id)
 	int pos = 0;
 
 	while (pos < (int)main->hash_ring_size &&
-		   hash_function_servers(&main->hash_ring[pos].label) < hash_key
-		   && main->hash_ring[pos].server)
+		   hash_function_servers(&main->hash_ring[pos].label) < hash_key)
 		pos++;
 
 	// In caz ca pos ajunge sa depaseasca dimensiunea

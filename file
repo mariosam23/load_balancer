@@ -9,4 +9,12 @@ retrieve "c674390f9"
 retrieve "2fe5f9f583"
 remove_server 2
 remove_server 1
+add_server 4
+add_server 2
+add_server 100
+add_server 50
+remove_server 4
 retrieve "2fe5f9f583"
+retrieve "c674390f9"
+retrieve "5a51719f5ec"
+retrieve "a3529213e15"
