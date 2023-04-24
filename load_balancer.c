@@ -322,7 +322,6 @@ char *loader_retrieve(load_balancer *main, char *key, int *server_id)
 void free_load_balancer(load_balancer *main)
 {
 	for (unsigned int i = 0; i < main->hash_ring_size; i++) {
-		// printf("hash_label :  0x%x     ,   server_id: %d\n", hash_function_servers(&main->hash_ring[i].label), main->hash_ring[i].label % TEN_TO_FIFTH);
 		if (main->hash_ring[i].server)
 			free_server_memory(main->hash_ring[i].server);
 	}
