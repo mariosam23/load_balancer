@@ -261,13 +261,11 @@ int find_pos(load_balancer *main, unsigned int hash)
 	int first_pos = 0;
 	int last_pos = main->hash_ring_size - 1;
 
-	if (hash <= get_hash(main, first_pos)) {
+	if (hash <= get_hash(main, first_pos))
 		return first_pos;
-	}
 
-	if (hash >= get_hash(main, last_pos)) {
+	if (hash >= get_hash(main, last_pos))
 		return first_pos;
-	}
 
 	while (first_pos <= last_pos) {
 		int mid = (first_pos + last_pos) / 2;
