@@ -23,6 +23,7 @@ $(LOAD).o: $(LOAD).c $(LOAD).h
 
 $(HASHTABLE).o: $(HASHTABLE).c $(HASHTABLE).h
 	$(CC) $(CFLAGS) $^ -c
-
+zip:
+	zip tema2.zip *.c *.h Makefile
 clean:
 	rm -f *.o tema2 *.h.gch

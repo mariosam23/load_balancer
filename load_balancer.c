@@ -82,8 +82,6 @@ unsigned int get_server_id(load_balancer *main, int pos)
 
 void rebalance(load_balancer *main, unsigned int pos, int dest_pos)
 {
-	// if (main->hash_ring[dest_pos].label % TEN_TO_FIFTH == 1)
-	// 	printf("pos: %d     dest_pos %d\n\n", pos, dest_pos);
 	if (!main->hash_ring[pos].server || !main->hash_ring[dest_pos].server)
 		return;
 
@@ -153,34 +151,6 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 unsigned int get_hash(load_balancer *main, int pos)
 {
 	return hash_function_servers(&main->hash_ring[pos].label);
-}
-
-int find_pos(load_balancer *main, int pos, unsigned int hash_remv_serv, int id)
-{
-	pos = -1;
-	int first_pos = 0;
-	int last_pos = main->hash_ring_size - 1;
-
-	while (first_pos <= last_pos) {
-		int mij = (first_pos + last_pos) / 2;
-
-		if (get_hash(main, mij) < hash_remv_serv && get_hash(main, mij + 1) > hash_remv_serv) {
-			pos = mij + 1;
-			break;
-		} else if (get_hash(main, mij) == hash_remv_serv) {
-			if ((int)get_server_id(main, mij) > id)
-				pos = mij;
-			else
-				pos = mij + 1;
-			break;
-		} else if (get_hash(main, mij) < hash_remv_serv) {
-			first_pos = mij + 1;
-		} else if (get_hash(main, mij) > hash_remv_serv) {
-			last_pos = mij - 1;
-		}
-	}
-
-	return pos;
 }
 
 void add_new_server(load_balancer *main, unsigned int label, server_memory * new_server) {
@@ -285,14 +255,41 @@ void loader_remove_server(load_balancer *main, int server_id)
 	}
 }
 
+int find_pos(load_balancer *main, unsigned int hash)
+{
+	int pos = -1;
+	int first_pos = 0;
+	int last_pos = main->hash_ring_size - 1;
+
+	if (hash <= get_hash(main, first_pos)) {
+		return first_pos;
+	}
+
+	if (hash >= get_hash(main, last_pos)) {
+		return first_pos;
+	}
+
+	while (first_pos <= last_pos) {
+		int mid = (first_pos + last_pos) / 2;
+
+		if (get_hash(main, mid) < hash && get_hash(main, mid + 1) > hash) {
+			pos = mid + 1;
+			break;
+		} else if (get_hash(main, mid) < hash) {
+			first_pos = mid + 1;
+		} else if (get_hash(main, mid) > hash) {
+			last_pos = mid - 1;
+		}
+	}
+
+	return pos;
+}
+
 void loader_store(load_balancer *main, char *key, char *value, int *server_id)
 {
 	unsigned int hash_key = hash_function_key(key);
-	int pos = 0;
-
-	while (pos < (int)main->hash_ring_size &&
-		   hash_function_servers(&main->hash_ring[pos].label) < hash_key)
-		pos++;
+	int pos;
+	pos = find_pos(main, hash_key);
 
 	// In caz ca pos ajunge sa depaseasca dimensiunea
 	pos %= main->hash_ring_size;
