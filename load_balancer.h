@@ -7,28 +7,22 @@
 #define TEN_TO_FIFTH 100000
 #define NR_REPLICAS 3
 
-// typedef struct {
-// 	/*unsigned int server_id;*/
-// 	// eticheta = replica_id * 10^5  + server_id;
-// 	// server_id = label % TEN_TO_FIFTH
-// 	// replica_id = label / TEN_TO_FIFTH
-// 	// hash = hash(label)
-// 	unsigned int label;
-// 	// unsigned int replica_id;
-// 	// unsigned int hash;
-// 	server_memory *server;
-// } hash_ring_t;
+typedef struct {
+	unsigned int label;
+	server_memory *server;
+} hash_ring_t;
 
-// struct load_balancer {
-// 	hash_ring_t *hash_ring;
-// 	unsigned int hash_ring_size;
-// 	unsigned int hash_ring_capacity;
-// };
+struct load_balancer {
+	hash_ring_t *hash_ring;
+	unsigned int hash_ring_size;
+	unsigned int hash_ring_capacity;
+};
 
 typedef struct load_balancer load_balancer;
 
 /**
- * init_load_balancer() - initializes the memory for a new load balancer and its fields and
+ * init_load_balancer() - initializes the memory for a new load
+ * balancer and its fields and
  *                        returns a pointer to it
  *
  * Return: pointer to the load balancer struct
@@ -36,7 +30,8 @@ typedef struct load_balancer load_balancer;
 load_balancer *init_load_balancer();
 
 /**
- * free_load_balancer() - frees the memory of every field that is related to the
+ * free_load_balancer() - frees the memory of every field that is
+ * related to the
  * load balancer (servers, hashring)
  *
  * @arg1: Load balancer to free
@@ -56,8 +51,10 @@ void free_load_balancer(load_balancer *main);
  * using the last parameter.
  *
  * Hint:
- * Search the hashring associated to the load balancer to find the server where the entry
- * should be stored and call the function to store the entry on the respective server.
+ * Search the hashring associated to the load balancer to find the server where
+ * the entry
+ * should be stored and call the function to store the entry onthe respective
+ * server.
  *
  */
 void loader_store(load_balancer *main, char *key, char *value, int *server_id);
@@ -74,8 +71,10 @@ void loader_store(load_balancer *main, char *key, char *value, int *server_id);
  * the key does NOT exist in the system.
  *
  * Hint:
- * Search the hashring associated to the load balancer to find the server where the entry
- * should be stored and call the function to store the entry on the respective server.
+ * Search the hashring associated to the load balancer to find the server where
+ * the entry
+ * should be stored and call the function to store the entry on the respective
+ * server.
  */
 char *loader_retrieve(load_balancer *main, char *key, int *server_id);
 
