@@ -97,7 +97,7 @@ void apply_requests(FILE *input_file)
 }
 
 int main(int argc, char *argv[])
-{	
+{
 	FILE *input;
 
 	if (argc != 2) {

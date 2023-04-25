@@ -6,17 +6,20 @@
 
 ### Descriere:
 
-* Scurtă descriere a funcționalității temei
-* Eventuale explicații suplimentare pentru anumite părți din temă ce crezi că nu sunt suficient de clare doar urmărind codul
+Comanda **INIT_LOAD_BALANCER**
+* Aceasta este comanda incipienta, in cadrul careia este alocata memoria pentru load balancer si sunt initializate campurile structurii acesteia.
 
-### Comentarii asupra temei:
+Comanda **LOADER_ADD_SERVER**
+* Comanda in urma careia serverele sunt puse in cercul imaginar. Inainte de adaugare verific daca este nevoie de o realocare pentru extinderea cercului. Apoi, pe masura ce adaug servere, verific si daca este nevoie de rabalansare, adica daca dimensiunea dictionarului server-ului sursa este diferita de zero. Gasesc pozitia unde ar trebui sa rebalansez obiectele, ca mai apoi sa aiba loc mutarea obiectelor.
 
-* Crezi că ai fi putut realiza o implementare mai bună?
-* Ce ai invățat din realizarea acestei teme?
-* Alte comentarii
+Comanda **LOADER_ADD_SERVER**
+* Determin pozitia server-ului care trebuie eliminat, folosind cautare binara. Apoi, similar cu functia de adaugare, determin pozitia server-ului unde ar trebui mutate obiectele si efectuez aceasta actiune. In final, mut server-ele pe ultimele pozitii si le eliberez memoria.
 
-### (Opțional) Resurse / Bibliografie:
+Comanda **LOADER_STORE**
+* Aflu pozitia unde ar trebui sa adaug un nou obiect, apoi realizez adaugarea efectiva prin intermediul functiei "server_store", care pune in dictionarul server-ului aferent perechea cheie-valoare.
 
-1. [Așa se adaugă un link în Markdown](https://youtu.be/dQw4w9WgXcQ)
+Comanda **LOADER_RETRIEVE**
+* Gasesc pozitia server-ului care contine hash-ul cheii primite ca parametru, folosind cautare binara. Apoi, apelez functia "server_retrieve", ce extrage din dictionarul serever-ului valoarea.
 
-PS: OCW strică link-ul, trebuie să puneți ***doar*** https-ul intre ().
+Comanda **FREE_LOAD_BALANCER**
+* Realizeaza dealocarea tuturor resurselor si permite terminarea in conditii optime ale programului.

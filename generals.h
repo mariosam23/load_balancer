@@ -19,3 +19,5 @@ unsigned int get_hash(load_balancer *main, int pos);
  *	@arg2: Hash-ul care trebuie gasit.
  */
 int find_pos(load_balancer *main, unsigned int hash);
+
+int find_dest_pos(load_balancer *main, int pos);

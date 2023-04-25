@@ -8,6 +8,13 @@
 #define NR_REPLICAS 3
 
 typedef struct {
+	/*
+		id = label % TEN_TO_FIFTH
+		replica_id = label / TEN_TO_FIFTH
+		hash = hash(&label)
+		Deci, eticheta este suficienta pentru a afla toate celelalte ca-
+		racteristici ale server-ului.
+	*/
 	unsigned int label;
 	server_memory *server;
 } hash_ring_t;

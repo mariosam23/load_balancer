@@ -50,13 +50,7 @@ void loader_remove_server(load_balancer *main, int server_id)
 		pos = find_pos_to_remove(main, hash_function_servers(&label));
 
 		int dest_pos;
-
-		for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size;
-			 dest_pos++)
-			if (get_server_id(main, dest_pos) != get_server_id(main, pos))
-				break;
-
-		dest_pos %= main->hash_ring_size;
+		dest_pos = find_dest_pos(main, pos);
 
 		if (main->hash_ring[pos].server->ht->size)
 			rebalance_removing(main, pos, dest_pos);

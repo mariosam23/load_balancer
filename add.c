@@ -94,9 +94,8 @@ void add_new_server(load_balancer *main, unsigned int label,
 
 	int src_pos = pos + 1;
 	while (src_pos < (int)main->hash_ring_size &&
-		   get_server_id(main, src_pos) == get_server_id(main, pos)) {
+		   get_server_id(main, src_pos) == get_server_id(main, pos))
 		src_pos++;
-	}
 
 	// In caz ca src_pos depaseste dimensiunea.
 	src_pos %= main->hash_ring_size;

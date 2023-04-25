@@ -67,3 +67,15 @@ int find_pos(load_balancer *main, unsigned int hash)
 
 	return pos;
 }
+
+int find_dest_pos(load_balancer *main, int pos)
+{
+	int dest_pos;
+
+	for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size;
+		 dest_pos++)
+		if (get_server_id(main, dest_pos) != get_server_id(main, pos))
+			break;
+
+	return dest_pos %= main->hash_ring_size;
+}
