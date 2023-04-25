@@ -54,3 +54,49 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 	}
 }
 
+
+int find_pos_to_add(load_balancer *main, unsigned int hash, unsigned int id)
+{
+	unsigned int pos = 0;
+	while (pos < main->hash_ring_size && hash >=
+			hash_function_servers(&main->hash_ring[pos].label)) {
+		if (hash ==
+			hash_function_servers(&main->hash_ring[pos].label)) {
+			if (id % TEN_TO_FIFTH > main->hash_ring[pos].label
+				% TEN_TO_FIFTH) {
+				pos++;
+				break;
+			}
+			break;
+		}
+		pos++;
+	}
+
+	return pos;
+}
+
+void add_new_server(load_balancer *main, unsigned int label,
+					server_memory *new_server)
+{
+	unsigned int pos;
+	pos = find_pos_to_add(main, hash_function_servers(&label),
+						  label % TEN_TO_FIFTH);
+
+	for (unsigned int j = main->hash_ring_size; j > pos; j--)
+		swap_data(&main->hash_ring[j], &main->hash_ring[j - 1]);
+
+	main->hash_ring_size++;
+	main->hash_ring[pos].label = label;
+	main->hash_ring[pos].server = new_server;
+
+	int src_pos = pos + 1;
+	while (src_pos < (int)main->hash_ring_size &&
+		   get_server_id(main, src_pos) == get_server_id(main, pos)) {
+		src_pos++;
+	}
+
+	src_pos %= main->hash_ring_size;
+
+	if (main->hash_ring[src_pos].server->ht->size)
+		rebalance_adding(main, pos, src_pos);
+}
