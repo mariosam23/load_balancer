@@ -14,8 +14,7 @@ typedef struct ll_node_t {
 	struct ll_node_t  *next;
 } ll_node_t;
 
-typedef struct linked_list_t
-{
+typedef struct linked_list_t {
 	ll_node_t  *head;
 	unsigned int data_size;
 	unsigned int size;
@@ -64,13 +63,40 @@ hashtable_t *ht_create(unsigned int hmax, unsigned int (*hash_function)(void *),
 					   int (*compare_function)(void *, void *),
 					   void (*key_val_free_function)(void *));
 
+/**
+ *	Aflu indexul, apoi parcurg lista in vederea gasirii cheii.
+ *	@arg1: Dictionarul folosit pentru a cauta in el.
+ *	@arg2: Cheia care trebuie gasita.
+ */
 int ht_has_key(hashtable_t *ht, void *key);
 
+/**
+ *	Aflu indexul, apoi parcurg lista in vederea gasirii cheii.
+ *	Daca o gasesc o returnez, altfel returnez NULL.
+ *	@arg1: Dictionarul folosit pentru a cauta in el.
+ *	@arg2: Cheia care trebuie gasita.
+ */
 void *ht_get(hashtable_t *ht, void *key);
 
+/**
+ *	Aflu indexul, apoi parcurg lista in vederea gasirii listei in care
+ *	trebuie pusa cheia. Verific daca aceasta exista deja. Daca da, actuali-
+ *	zez doar valoarea, altfel pun si cheia si valoarea.
+ *	@arg1: Dictionarul folosit pentru a cauta in el.
+ *	@arg2: Cheia care trebuie pusa.
+ *	@arg3: Lungimea cheii.
+ *	@arg4: Valoarea care trebuie pusa.
+ *	@arg5: Lungimea valorii.
+ */
 void ht_put(hashtable_t *ht, void *key, unsigned int key_size,
 			void *value, unsigned int value_size);
 
+/**
+ *	Aflu indexul, apoi parcurg lista in vederea gasirii cheii.
+ *	Daca o gasesc o elimin, altfel ma intorc fara sa fac nimic.
+ *	@arg1: Dictionarul folosit pentru a cauta in el.
+ *	@arg2: Cheia care trebuie gasita.
+ */
 void ht_remove_entry(hashtable_t *ht, void *key);
 
 void ht_free(hashtable_t *ht);

@@ -11,6 +11,6 @@ GENERALS=generals
 build:
 	$(CC) $(CFLAGS) *.c -o tema2
 zip:
-	zip tema2.zip *.c *.h Makefile
+	zip tema2.zip *.c *.h Makefile README.md
 clean:
 	rm -f *.o tema2 *.h.gch

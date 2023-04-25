@@ -199,7 +199,7 @@ int ht_has_key(hashtable_t *ht, void *key)
 	ll_node_t *find_node = ht->buckets[index]->head;
 
 	while (find_node) {
-		if (ht->compare_function(key, ((info_t *)find_node->data)->key) == 0)
+		if (!ht->compare_function(key, ((info_t *)find_node->data)->key))
 			return 1;
 
 		find_node = find_node->next;
@@ -218,7 +218,7 @@ void *ht_get(hashtable_t *ht, void *key)
 	ll_node_t *find_node = ht->buckets[index]->head;
 
 	while (find_node) {
-		if (ht->compare_function(key, ((info_t *)find_node->data)->key) == 0)
+		if (!ht->compare_function(key, ((info_t *)find_node->data)->key))
 			return ((info_t *)find_node->data)->value;
 
 		find_node = find_node->next;

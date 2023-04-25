@@ -32,6 +32,7 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 	ll_node_t *node = NULL;
 	unsigned int j = 0;
 
+	// Parcurg lista server-ului de la src_pos.
 	while (j < main->hash_ring[src_pos].server->ht->hmax) {
 		if (main->hash_ring[src_pos].server->ht->buckets[j]->head)
 			node = main->hash_ring[src_pos].server->ht->buckets[j]->head;
@@ -40,10 +41,13 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 			info_t *data = NULL;
 			if (node->data) {
 				data = (info_t *)node->data;
+
 				if (hash_function_key(data->key) <
 					hash_function_servers(&main->hash_ring[dest_pos].label))
 					server_store(main->hash_ring[dest_pos].server, data->key,
 								 data->value);
+				// Daca hash-ul este mai mare decat hash-ul oricarui server
+				// trevuie adaugat la inceput.
 				else if (!dest_pos)
 					server_store(main->hash_ring[dest_pos].server, data->key,
 								 data->value);
@@ -54,20 +58,19 @@ void rebalance_adding(load_balancer *main, int dest_pos, int src_pos)
 	}
 }
 
-
 int find_pos_to_add(load_balancer *main, unsigned int hash, unsigned int id)
 {
 	unsigned int pos = 0;
+
 	while (pos < main->hash_ring_size && hash >=
 			hash_function_servers(&main->hash_ring[pos].label)) {
 		if (hash ==
 			hash_function_servers(&main->hash_ring[pos].label)) {
 			if (id % TEN_TO_FIFTH > main->hash_ring[pos].label
-				% TEN_TO_FIFTH) {
-				pos++;
-				break;
-			}
-			break;
+				% TEN_TO_FIFTH)
+				return pos + 1;
+
+			return pos;
 		}
 		pos++;
 	}
@@ -95,8 +98,10 @@ void add_new_server(load_balancer *main, unsigned int label,
 		src_pos++;
 	}
 
+	// In caz ca src_pos depaseste dimensiunea.
 	src_pos %= main->hash_ring_size;
 
+	// Daca se afla obiecte in serverul sursa.
 	if (main->hash_ring[src_pos].server->ht->size)
 		rebalance_adding(main, pos, src_pos);
 }

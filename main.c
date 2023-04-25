@@ -10,49 +10,49 @@
 #define KEY_LENGTH 128
 #define VALUE_LENGTH 65536
 
-void get_key_value(char* key, char* value, char* request) {
+void get_key_value(char *key, char *value, char *request)
+{
 	int key_start = 0, value_start = 0;
 	int key_finish = 0, value_finish = 0;
 	int key_index = 0, value_index = 0;
 
 	for (unsigned int i = 0; i < strlen(request); ++i) {
 		if (request[i] == '"' && value_start != 1) {
-			if (key_start == 0) {
+			if (key_start == 0)
 				key_start = 1;
-			} else if (key_finish == 0) {
+			else if (key_finish == 0)
 				key_finish = 1;
-			} else if (value_start == 0) {
+			else if (value_start == 0)
 				value_start = 1;
-			}
 		} else {
-			if (key_start == 1 && key_finish == 0) {
+			if (key_start == 1 && key_finish == 0)
 				key[key_index++] = request[i];
-			} else if (value_start == 1 && value_finish == 0) {
+			else if (value_start == 1 && value_finish == 0)
 				value[value_index++] = request[i];
-			}
 		}
 	}
 
 	value[value_index - 1] = 0;
 }
 
-void get_key(char* key, char* request) {
+void get_key(char *key, char *request)
+{
 	int key_start = 0, key_index = 0;
 
 	for (unsigned int i = 0; i < strlen(request); ++i) {
-		if (request[i] == '"') {
+		if (request[i] == '"')
 			key_start = 1;
-		} else if (key_start == 1) {
+		else if (key_start == 1)
 			key[key_index++] = request[i];
-		}
 	}
 }
 
-void apply_requests(FILE* input_file) {
+void apply_requests(FILE *input_file)
+{
 	char request[REQUEST_LENGTH] = {0};
 	char key[KEY_LENGTH] = {0};
 	char value[VALUE_LENGTH] = {0};
-	load_balancer* main_server = init_load_balancer();
+	load_balancer *main_server = init_load_balancer();
 
 	while (fgets(request, REQUEST_LENGTH, input_file)) {
 		request[strlen(request) - 1] = 0;
@@ -73,7 +73,7 @@ void apply_requests(FILE* input_file) {
 											key, &index_server);
 			if (retrieved_value) {
 				printf("Retrieved %s from server %d.\n",
-						retrieved_value, index_server);
+					   retrieved_value, index_server);
 			} else {
 				printf("Key %s not present.\n", key);
 			}
@@ -96,20 +96,20 @@ void apply_requests(FILE* input_file) {
 	free_load_balancer(main_server);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{	
 	FILE *input;
 
 	if (argc != 2) {
-		printf("Usage:%s input_file \n", argv[0]);
+		printf("Usage:%s input_file\n", argv[0]);
 		return -1;
 	}
 
 	input = fopen(argv[1], "rt");
-	DIE(input == NULL, "missing input file");
+	DIE(!input, "missing input file");
 
 	apply_requests(input);
 
 	fclose(input);
-
 	return 0;
 }

@@ -12,14 +12,20 @@ void rebalance_removing(load_balancer *main, unsigned int pos, int dest_pos)
 	while (j < main->hash_ring[pos].server->ht->hmax) {
 		if (main->hash_ring[pos].server->ht->buckets[j]->size)
 			node = main->hash_ring[pos].server->ht->buckets[j]->head;
+
 		while (node) {
 			info_t *data = NULL;
+
 			if (node->data)
 				data = (info_t *)node->data;
+
 			if (data) {
 				node = node->next;
+
+				// Adaug in server-ul de la dest_pos si elimin din sursa.
 				server_store(main->hash_ring[dest_pos].server,
 							 (char *)data->key, (char *)data->value);
+
 				server_remove(main->hash_ring[pos].server, (char *)data->key);
 			} else {
 				node = node->next;

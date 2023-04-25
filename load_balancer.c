@@ -45,10 +45,12 @@ void loader_remove_server(load_balancer *main, int server_id)
 {
 	for (int i = 0; i < NR_REPLICAS; i++) {
 		int pos = 0;
+
 		unsigned int label = i * TEN_TO_FIFTH + server_id;
 		pos = find_pos_to_remove(main, hash_function_servers(&label));
 
 		int dest_pos;
+
 		for (dest_pos = pos + 1; dest_pos < (int)main->hash_ring_size;
 			 dest_pos++)
 			if (get_server_id(main, dest_pos) != get_server_id(main, pos))
@@ -64,6 +66,8 @@ void loader_remove_server(load_balancer *main, int server_id)
 	}
 
 	int size = main->hash_ring_size;
+
+	// Am mutat server-ele impreuna cu replicile la final si acum le eliberez.
 	for (int i = size - 1; i > size - 1 - NR_REPLICAS; i--) {
 		free_server_memory(main->hash_ring[i].server);
 		main->hash_ring_size--;
