@@ -1,4 +1,6 @@
-#pragma once
+/* Copyright 2023 Sampetru Mario */
+#ifndef GENERALS_H_
+#define GENERALS_H_
 
 #include "load_balancer.h"
 
@@ -21,3 +23,5 @@ unsigned int get_hash(load_balancer *main, int pos);
 int find_pos(load_balancer *main, unsigned int hash);
 
 int find_dest_pos(load_balancer *main, int pos);
+
+#endif /* GENERALS_H_ */

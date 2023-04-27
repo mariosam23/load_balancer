@@ -1,4 +1,6 @@
-#pragma once
+/* Copyright 2023 Sampetru Mario */
+#ifndef ADD_H_
+#define ADD_H_
 
 #include "load_balancer.h"
 
@@ -43,3 +45,5 @@ int find_pos_to_add(load_balancer *main, unsigned int hash, unsigned int id);
  */
 void add_new_server(load_balancer *main, unsigned int label,
 					server_memory *new_server);
+
+#endif  /* ADD_H_ */

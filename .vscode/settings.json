@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "dictionary.h": "c"
+        "dictionary.h": "c",
+        "load_balancer.h": "c"
     }
 }

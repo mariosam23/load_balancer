@@ -1,3 +1,4 @@
+/* Copyright 2023 Sampetru Mario */
 #include "server.h"
 #include "load_balancer.h"
 

@@ -119,7 +119,7 @@ function checkBonus {
     for entry in *.{c,h}; do
 	echo $entry
         if [[ -f $entry ]]; then
-            python3 cpplint.py --root=$(pwd) --filter=-build/include,-runtime/printf,-runtime/threadsafe_fn,-build/include_what_you_use,-runtime/int "$entry" > checkstyle.txt
+            python2.7 cpplint.py --root=$(pwd) --filter=-build/include,-runtime/printf,-runtime/threadsafe_fn,-build/include_what_you_use,-runtime/int "$entry" > checkstyle.txt
             YOUR_BONUS=`cat checkstyle.txt | grep "Total errors found: "| tr -dc '0-9'`
             ERRORS_NUMBER=$(( $ERRORS_NUMBER+$YOUR_BONUS ))
         fi

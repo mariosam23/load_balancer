@@ -1,4 +1,8 @@
 /* Copyright 2023 Sampetru Mario */
+
+#ifndef HASHTABLE_H_
+#define HASHTABLE_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -100,3 +104,5 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size,
 void ht_remove_entry(hashtable_t *ht, void *key);
 
 void ht_free(hashtable_t *ht);
+
+#endif  // HASHTABLE_H_

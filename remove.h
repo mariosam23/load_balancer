@@ -1,4 +1,7 @@
-#pragma once
+/* Copyright 2023 Sampetru Mario */
+#ifndef REMOVE_H_
+#define REMOVE_H_
+
 
 #include "load_balancer.h"
 
@@ -18,3 +21,5 @@ void rebalance_removing(load_balancer *main, unsigned int pos, int dest_pos);
  *	@arg2: Hash-ul care trebuie gasit.
  */
 int find_pos_to_remove(load_balancer *main, unsigned int hash_remv_serv);
+
+#endif /* REMOVE_H_ */
