@@ -1,25 +1,27 @@
-**Nume: Sampetru Mario**
+# Load Balancer
 
-**Grupă: 311CAb**
+## Description:
 
-## Load balancer. Tema 2.
+### `INIT_LOAD_BALANCER` Command
 
-### Descriere:
+This is the initial command, in which memory is allocated for the load balancer and the fields of its structure are initialized.
 
-Comanda **INIT_LOAD_BALANCER**
-* Aceasta este comanda incipienta, in cadrul careia este alocata memoria pentru load balancer si sunt initializate campurile structurii acesteia.
+### `LOADER_ADD_SERVER` Command
 
-Comanda **LOADER_ADD_SERVER**
-* Comanda in urma careia serverele sunt puse in cercul imaginar. Inainte de adaugare verific daca este nevoie de o realocare pentru extinderea cercului. Apoi, pe masura ce adaug servere, verific si daca este nevoie de rabalansare, adica daca dimensiunea dictionarului server-ului sursa este diferita de zero. Gasesc pozitia unde ar trebui sa rebalansez obiectele, ca mai apoi sa aiba loc mutarea obiectelor.
+Command that adds servers to the imaginary circle. Before adding, I check if reallocation is needed to expand the circle. Then, as I add servers, I also check if rebalancing is necessary, which means if the size of the source server's dictionary is not zero. I find the position where objects should be rebalanced, followed by the actual movement of objects.
 
-Comanda **LOADER_ADD_SERVER**
-* Determin pozitia server-ului care trebuie eliminat, folosind cautare binara. Apoi, similar cu functia de adaugare, determin pozitia server-ului unde ar trebui mutate obiectele si efectuez aceasta actiune. In final, mut server-ele pe ultimele pozitii si le eliberez memoria.
+### `LOADER_REMOVE_SERVER` Command
 
-Comanda **LOADER_STORE**
-* Aflu pozitia unde ar trebui sa adaug un nou obiect, apoi realizez adaugarea efectiva prin intermediul functiei "server_store", care pune in dictionarul server-ului aferent perechea cheie-valoare.
+I determine the position of the server to be removed using binary search. Then, similar to the add function, I determine the position of the server where objects should be moved and perform this action. Finally, I move servers to the last positions and free their memory.
 
-Comanda **LOADER_RETRIEVE**
-* Gasesc pozitia server-ului care contine hash-ul cheii primite ca parametru, folosind cautare binara. Apoi, apelez functia "server_retrieve", ce extrage din dictionarul serever-ului valoarea.
+### `LOADER_STORE` Command
 
-Comanda **FREE_LOAD_BALANCER**
-* Realizeaza dealocarea tuturor resurselor si permite terminarea in conditii optime ale programului.
+I find the position where a new object should be added, then perform the actual addition through the "server_store" function, which puts the key-value pair in the dictionary of the appropriate server.
+
+### `LOADER_RETRIEVE` Command
+
+I find the position of the server that contains the hash of the key received as a parameter using binary search. Then, I call the "server_retrieve" function, which extracts the value from the server's dictionary.
+
+### `FREE_LOAD_BALANCER` Command
+
+Performs deallocation of all resources and allows the program to terminate optimally.
